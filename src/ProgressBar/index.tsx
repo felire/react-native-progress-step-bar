@@ -1,26 +1,52 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Animated, TouchableOpacity, Text } from 'react-native';
+import React, { useEffect, useRef, useMemo } from 'react';
+import { View, Animated, Text, StyleProp, ViewStyle } from 'react-native';
 
 import usePrevious from './use-previous';
 
 import styles from './styles';
 
-interface ProgressBarDots {
+interface ProgressBarDotsProps {
   steps: number;
-  ranges: number[];
+  ranges?: string[];
   width: number;
   height: number;
-  dotDiameter: number;
+  dotDiameter?: number;
+  currentStep: number;
+  backgroundBarStyle?: StyleProp<ViewStyle>;
+  fillerBarStyle?: StyleProp<ViewStyle>;
+  backgroundDotStyle?: StyleProp<ViewStyle>;
+  filledDotStyle?: StyleProp<ViewStyle>;
+  stepToStepAnimationDuration?: number;
+  withDots?: boolean;
+  rangeTextContainerWidth?: number;
+  rangeText?: StyleProp<ViewStyle>;
+  filledBarContainerStyle?: StyleProp<ViewStyle>;
 }
 
-interface AnimatedDot {
+interface AnimatedDotProps {
   isOnDot: boolean;
-  range: number;
+  range?: string;
   dotDiameter: number;
+  backgroundDotStyle: StyleProp<ViewStyle>;
+  filledDotStyle: StyleProp<ViewStyle>;
+  stepToStepAnimationDuration: number;
+  withDots: boolean;
+  rangeTextContainerWidth: number;
+  rangeText?: StyleProp<ViewStyle>;
 }
-const AnimatedDot = ({ isOnDot, range, dotDiameter }: AnimatedDot) => {
+const AnimatedDot = ({
+  isOnDot,
+  range,
+  dotDiameter,
+  backgroundDotStyle,
+  filledDotStyle,
+  stepToStepAnimationDuration,
+  withDots,
+  rangeTextContainerWidth,
+  rangeText,
+}: AnimatedDotProps) => {
   const animatedValue = useRef<Animated.Value>(
-    new Animated.Value(isOnDot ? 1 : 0),
+    new Animated.Value(isOnDot ? 1 : 0)
   );
   const prevIsOnDot = usePrevious(isOnDot, isOnDot);
 
@@ -38,7 +64,7 @@ const AnimatedDot = ({ isOnDot, range, dotDiameter }: AnimatedDot) => {
           toValue: 1.33,
           duration: 500,
           useNativeDriver: true,
-          delay: 900,
+          delay: (stepToStepAnimationDuration * 9) / 10,
         }),
         Animated.timing(animatedValue.current, {
           toValue: 1,
@@ -47,157 +73,144 @@ const AnimatedDot = ({ isOnDot, range, dotDiameter }: AnimatedDot) => {
         }),
       ]).start();
     }
-  }, [isOnDot]);
+  }, [isOnDot, prevIsOnDot, stepToStepAnimationDuration]);
   return (
     <View>
-      <View
-        style={{
-          backgroundColor: '#00FFFF',
-          width: dotDiameter,
-          height: dotDiameter,
-          borderRadius: dotDiameter,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Animated.View
-          style={{
-            backgroundColor: 'white',
-            width: dotDiameter,
-            height: dotDiameter,
-            borderRadius: dotDiameter,
-            transform: [{ scale: animatedValue.current }],
-          }}
-        />
-      </View>
-      <View
-        style={{
-          position: 'absolute',
-          left: -14,
-          width: 40,
-          bottom: -25,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <Text
-          style={{
-            color: 'white',
-            width: 40,
-            textAlign: 'center',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+      {withDots && (
+        <View
+          style={[
+            {
+              width: dotDiameter,
+              height: dotDiameter,
+              borderRadius: dotDiameter,
+            },
+            backgroundDotStyle,
+          ]}
         >
-          {range}
-        </Text>
-      </View>
+          <Animated.View
+            style={[
+              {
+                width: dotDiameter,
+                height: dotDiameter,
+                borderRadius: dotDiameter,
+                transform: [{ scale: animatedValue.current }],
+              },
+              filledDotStyle,
+            ]}
+          />
+        </View>
+      )}
+      {range && (
+        <View
+          style={[
+            {
+              left:
+                -(rangeTextContainerWidth / 2) +
+                (withDots ? dotDiameter / 2 : 0),
+              width: rangeTextContainerWidth,
+            },
+            styles.rangeContainer,
+          ]}
+        >
+          <Text style={[styles.textRange, rangeText]}>{range}</Text>
+        </View>
+      )}
     </View>
   );
 };
 const ProgressBarDots = ({
   ranges,
   steps,
-  dotDiameter,
+  dotDiameter = 12,
   height,
   width,
-}: ProgressBarDots) => {
-  const [currentStep, setCurrentStep] = useState(0);
+  currentStep,
+  backgroundBarStyle = styles.defaultBackgroundBar,
+  fillerBarStyle = styles.defaultFilledBar,
+  filledBarContainerStyle,
+  backgroundDotStyle = styles.defaultBackgroundDot,
+  filledDotStyle = styles.defaultFilledDot,
+  rangeText,
+  rangeTextContainerWidth = 40,
+  stepToStepAnimationDuration = 1000,
+  withDots = true,
+}: ProgressBarDotsProps) => {
   const animatedValue = useRef<Animated.Value>(new Animated.Value(0));
 
   const interpolatedDistance = animatedValue.current.interpolate({
     inputRange: [0, 1],
     outputRange: [0, width],
   });
-  const stepAnimatedSize = 1 / steps;
+  const stepAnimatedSize = useMemo(() => 1 / steps, [steps]);
   const numberOfDots = steps + 1;
-  const dotsDistance = width / steps - dotDiameter;
   const dotsList = [...Array(numberOfDots).keys()];
-  const handlePrevStep = useCallback(() => {
-    setCurrentStep(prevStep => prevStep - 1);
-  }, []);
-
-  const handleNextStep = useCallback(() => {
-    setCurrentStep(prevStep => prevStep + 1);
-  }, []);
 
   useEffect(() => {
     Animated.timing(animatedValue.current, {
       toValue: currentStep * stepAnimatedSize,
       useNativeDriver: true,
-      duration: 1000,
+      duration: stepToStepAnimationDuration,
     }).start();
-  }, [currentStep]);
+  }, [currentStep, stepAnimatedSize, stepToStepAnimationDuration]);
 
   const filledBarTranslationX = Animated.subtract(interpolatedDistance, width);
   return (
-    <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-      <View
-        style={{
+    <View
+      style={[
+        {
           width,
           height,
-          backgroundColor: '#00FFFF',
-        }}
-      >
+        },
+        backgroundBarStyle,
+      ]}
+    >
+      {(withDots || ranges) && (
         <View
-          style={{
-            position: 'absolute',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            height,
-            width,
-            zIndex: 1,
-          }}
+          style={[
+            {
+              height,
+              width,
+            },
+            styles.dotsContainer,
+          ]}
         >
-          {dotsList.map(index => (
+          {dotsList.map((index) => (
             <View key={index}>
               <AnimatedDot
                 isOnDot={index <= currentStep}
-                range={ranges[index]}
+                range={ranges ? ranges[index] : undefined}
                 dotDiameter={dotDiameter}
+                backgroundDotStyle={backgroundDotStyle}
+                filledDotStyle={filledDotStyle}
+                withDots={withDots}
+                stepToStepAnimationDuration={stepToStepAnimationDuration}
+                rangeText={rangeText}
+                rangeTextContainerWidth={rangeTextContainerWidth}
               />
             </View>
           ))}
         </View>
-        <View
-          style={{
+      )}
+      <View
+        style={[
+          {
             width,
             height,
-            overflow: 'hidden',
-          }}
-        >
-          <Animated.View
-            style={{
+          },
+          filledBarContainerStyle,
+          styles.filledBarContainer,
+        ]}
+      >
+        <Animated.View
+          style={[
+            {
               width,
               height,
-              backgroundColor: 'white',
               transform: [{ translateX: filledBarTranslationX }],
-            }}
-          />
-        </View>
-      </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          width: 400,
-          marginTop: 40,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <TouchableOpacity
-          onPress={handlePrevStep}
-          style={{ backgroundColor: 'green', marginRight: 30 }}
-        >
-          <Text>PrevStep</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleNextStep}
-          style={{ backgroundColor: 'green' }}
-        >
-          <Text>NextStep</Text>
-        </TouchableOpacity>
+            },
+            fillerBarStyle,
+          ]}
+        />
       </View>
     </View>
   );
