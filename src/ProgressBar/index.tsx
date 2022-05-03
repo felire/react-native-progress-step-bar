@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useMemo, ReactNode } from 'react';
 import { View, Animated, Text, StyleProp, ViewStyle } from 'react-native';
 
 import usePrevious from './use-previous';
@@ -21,6 +21,8 @@ interface ProgressBarDotsProps {
   rangeTextContainerWidth?: number;
   rangeText?: StyleProp<ViewStyle>;
   filledBarContainerStyle?: StyleProp<ViewStyle>;
+  CustomizedFilledBar?: ReactNode;
+  CustomizableDot?: ReactNode;
 }
 
 interface AnimatedDotProps {
@@ -33,6 +35,7 @@ interface AnimatedDotProps {
   withDots: boolean;
   rangeTextContainerWidth: number;
   rangeText?: StyleProp<ViewStyle>;
+  CustomizableDot?: ReactNode;
 }
 const AnimatedDot = ({
   isOnDot,
@@ -44,6 +47,7 @@ const AnimatedDot = ({
   withDots,
   rangeTextContainerWidth,
   rangeText,
+  CustomizableDot,
 }: AnimatedDotProps) => {
   const animatedValue = useRef<Animated.Value>(
     new Animated.Value(isOnDot ? 1 : 0)
@@ -97,7 +101,9 @@ const AnimatedDot = ({
               },
               filledDotStyle,
             ]}
-          />
+          >
+            {CustomizableDot}
+          </Animated.View>
         </View>
       )}
       {range && (
@@ -134,6 +140,8 @@ const ProgressBarDots = ({
   rangeTextContainerWidth = 40,
   stepToStepAnimationDuration = 1000,
   withDots = true,
+  CustomizedFilledBar,
+  CustomizableDot,
 }: ProgressBarDotsProps) => {
   const animatedValue = useRef<Animated.Value>(new Animated.Value(0));
 
@@ -186,6 +194,7 @@ const ProgressBarDots = ({
                 stepToStepAnimationDuration={stepToStepAnimationDuration}
                 rangeText={rangeText}
                 rangeTextContainerWidth={rangeTextContainerWidth}
+                CustomizableDot={CustomizableDot}
               />
             </View>
           ))}
@@ -210,7 +219,9 @@ const ProgressBarDots = ({
             },
             fillerBarStyle,
           ]}
-        />
+        >
+          {CustomizedFilledBar}
+        </Animated.View>
       </View>
     </View>
   );
