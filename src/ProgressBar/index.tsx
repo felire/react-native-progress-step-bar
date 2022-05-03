@@ -13,13 +13,13 @@ interface ProgressBarDotsProps {
   dotDiameter?: number;
   currentStep: number;
   backgroundBarStyle?: StyleProp<ViewStyle>;
-  fillerBarStyle?: StyleProp<ViewStyle>;
+  filledBarStyle?: StyleProp<ViewStyle>;
   backgroundDotStyle?: StyleProp<ViewStyle>;
   filledDotStyle?: StyleProp<ViewStyle>;
   stepToStepAnimationDuration?: number;
   withDots?: boolean;
   rangeTextContainerWidth?: number;
-  rangeText?: StyleProp<ViewStyle>;
+  rangeTextStyle?: StyleProp<ViewStyle>;
   filledBarContainerStyle?: StyleProp<ViewStyle>;
   CustomizedFilledBar?: ReactNode;
   CustomizableDot?: ReactNode;
@@ -34,7 +34,7 @@ interface AnimatedDotProps {
   stepToStepAnimationDuration: number;
   withDots: boolean;
   rangeTextContainerWidth: number;
-  rangeText?: StyleProp<ViewStyle>;
+  rangeTextStyle?: StyleProp<ViewStyle>;
   CustomizableDot?: ReactNode;
 }
 const AnimatedDot = ({
@@ -46,7 +46,7 @@ const AnimatedDot = ({
   stepToStepAnimationDuration,
   withDots,
   rangeTextContainerWidth,
-  rangeText,
+  rangeTextStyle,
   CustomizableDot,
 }: AnimatedDotProps) => {
   const animatedValue = useRef<Animated.Value>(
@@ -118,7 +118,7 @@ const AnimatedDot = ({
             styles.rangeContainer,
           ]}
         >
-          <Text style={[styles.textRange, rangeText]}>{range}</Text>
+          <Text style={[styles.textRange, rangeTextStyle]}>{range}</Text>
         </View>
       )}
     </View>
@@ -132,11 +132,11 @@ const ProgressBarDots = ({
   width,
   currentStep,
   backgroundBarStyle = styles.defaultBackgroundBar,
-  fillerBarStyle = styles.defaultFilledBar,
+  filledBarStyle = styles.defaultFilledBar,
   filledBarContainerStyle,
   backgroundDotStyle = styles.defaultBackgroundDot,
   filledDotStyle = styles.defaultFilledDot,
-  rangeText,
+  rangeTextStyle,
   rangeTextContainerWidth = 40,
   stepToStepAnimationDuration = 1000,
   withDots = true,
@@ -192,7 +192,7 @@ const ProgressBarDots = ({
                 filledDotStyle={filledDotStyle}
                 withDots={withDots}
                 stepToStepAnimationDuration={stepToStepAnimationDuration}
-                rangeText={rangeText}
+                rangeTextStyle={rangeTextStyle}
                 rangeTextContainerWidth={rangeTextContainerWidth}
                 CustomizableDot={CustomizableDot}
               />
@@ -217,7 +217,7 @@ const ProgressBarDots = ({
               height,
               transform: [{ translateX: filledBarTranslationX }],
             },
-            fillerBarStyle,
+            filledBarStyle,
           ]}
         >
           {CustomizedFilledBar}
