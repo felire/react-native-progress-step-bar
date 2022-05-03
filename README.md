@@ -19,13 +19,15 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Package to configure an Aniamted Progress Bar with multiple variations. 
+Package to configure an Animated Progress Bar with multiple variations. 
 You can use animated dots in the middle of each step or not using any of them at all and you can put a range number on each step.
 You can also create a bar or a dot with LinearGradient if you want something more customizable.
 
 ## Examples
 
 <img src="https://media.giphy.com/media/Y4emPGexd8U1rf3FnA/giphy.gif" alt="Example" width="320"/>
+
+<img src="https://media.giphy.com/media/S4MpDTOf5HFBhQ17t2/giphy.gif" alt="Example" width="320"/>
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -54,7 +56,7 @@ yarn add react-native-progress-step-bar
 | `height`            | `number`                    | required                     | The height of the progress bar                 |
 | `dotDiameter`                 | `number`                    | optional                          | If you are using dots, you can set the diameter of each dot using this prop |
 | `ranges`                  | `string[]`                   | optional                        | If you want to implement ranges and put a string below each dot (or without dots), you will have to use this prop.                                        |
-| `currentStep`                  | `number`                   | required                        | This is the currentStep of the progress bar. You willhave to control it in order to avoid it to be less than 0 and also avoid it to be greather than the number of steps that you have set.      
+| `currentStep`                  | `number`                   | required                        | This is the currentStep of the progress bar. You will have to control it in order to avoid it to be less than 0 and also avoid it to be greather than the number of steps that you have set.      
 | `backgroundBarStyle`                  | `StyleProp<ViewStyle>`                   | optional                        | This is useful if you want to set another `backgroundColor` to the bar when it is not filled. You can also set a `borderRadius` here if you want the bar to have `borderRadius` on the corners.      
 | `filledBarStyle`                  | `StyleProp<ViewStyle>`                   | optional                        | This is useful if you want to set a different `backgroundColor` to the filled bar (the progress bar). 
 | `filledBarContainerStyle`                  | `StyleProp<ViewStyle>`                   | optional                        | If you want to add some `borderRadius` to the filledBar, you will have to add that `borderRadius` to the container, and not to the `filledBarStyle`. This is the proper place to add `borderRadius` to the filledBar.     
