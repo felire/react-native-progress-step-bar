@@ -1,5 +1,9 @@
 # react-native-progress-step-bar
 
+![versión npm](https://img.shields.io/npm/v/react-native-progress-step-bar.svg?color=68d5f7)
+![Download npm](https://img.shields.io/npm/dw/react-native-progress-step-bar.svg?color=7551bb)
+[![MIT License][license-shield]][license-url]
+
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
 
