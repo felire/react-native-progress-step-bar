@@ -72,7 +72,7 @@ export default function App() {
           height={10}
           currentStep={currentStep}
           stepToStepAnimationDuration={1000}
-          fillerBarStyle={{ borderRadius: 10, backgroundColor: 'white' }}
+          filledBarStyle={{ borderRadius: 10, backgroundColor: 'white' }}
           backgroundBarStyle={{ borderRadius: 10, backgroundColor: '#777777' }}
           filledBarContainerStyle={{ borderRadius: 10 }}
           withDots={false}
